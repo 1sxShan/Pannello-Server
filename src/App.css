@@ -1,0 +1,200 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f2f4f7;
+  color: #1c2430;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  text-align: left;
+}
+
+.pannello {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.intestazione {
+  background: #1b3a5c;
+  color: white;
+  padding: 18px 20px;
+  border-radius: 8px;
+}
+
+.intestazione h1 {
+  margin: 0 0 6px;
+  font-size: 26px;
+}
+
+.intestazione p {
+  margin: 0;
+  line-height: 1.6;
+  color: #e4eaf0;
+}
+
+.intestazione p span {
+  font-size: 14px;
+}
+
+.riepilogo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 14px 0 22px;
+}
+
+.casella {
+  padding: 12px 14px;
+  background: white;
+  border: 1px solid #d6dee7;
+  border-radius: 8px;
+}
+
+.numero {
+  display: block;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.etichetta {
+  color: #5a6878;
+  font-size: 13px;
+}
+
+.sezione h2,
+.riquadro h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+
+.griglia {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 12px;
+}
+
+.scheda {
+  padding: 14px 16px;
+  border: 1px solid #d6dee7;
+  border-left: 6px solid #2a9d8f;
+  border-radius: 8px;
+  background: white;
+}
+
+.scheda h3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 8px;
+  font-size: 17px;
+}
+
+.scheda p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.scheda .ruolo {
+  color: #5a6878;
+}
+
+.scheda-attenzione {
+  border-left-color: #c97f14;
+}
+
+.scheda-critico {
+  border-left-color: #b4462f;
+}
+
+.scheda-offline {
+  border-left-color: #8a929b;
+  background: #e9ecef;
+}
+
+.badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #dcf0ed;
+  color: #17675e;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.badge-attenzione {
+  background: #fbeeda;
+  color: #85520b;
+}
+
+.badge-critico {
+  background: #fae6e1;
+  color: #963a28;
+}
+
+.badge-offline {
+  background: #dfe3e7;
+  color: #4d5660;
+}
+
+.colonne {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.riquadro {
+  padding: 14px 16px;
+  background: white;
+  border: 1px solid #d6dee7;
+  border-radius: 8px;
+}
+
+.evidenza {
+  border: 2px solid #1b3a5c;
+}
+
+.evidenza .scheda {
+  margin-top: 12px;
+}
+
+.non-trovato {
+  color: #b4462f;
+  font-weight: bold;
+}
+
+.avvisi {
+  background: #fbeeda;
+}
+
+.avvisi ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.avvisi li {
+  margin: 6px 0;
+}
+
+.avvisi-vuoto {
+  background: #dcf0ed;
+}
+
+footer {
+  margin-top: 18px;
+  color: #5a6878;
+  font-size: 13px;
+  text-align: center;
+}
+
+@media (max-width: 650px) {
+  .pannello {
+    padding: 12px;
+  }
+
+  .colonne {
+    grid-template-columns: 1fr;
+  }
+}
