@@ -1,73 +1,15 @@
 import "./App.css";
 import { sistema, servers, avvisi } from "./dati";
+import { contaPerStato, cpuMedia, piuLento } from "./serverUtils";
+import SchedaServer from "./components/SchedaServer";
+import Riepilogo from "./components/Riepilogo";
+import Avvisi from "./components/Avvisi";
 
-const SOGLIE = {
-  attenzione: 70,
-  critico: 90,
-};
-
-function statoServer(server) {
-  if (!server.online) return "offline";
-  if (server.cpu >= SOGLIE.critico) return "critico";
-  if (server.cpu >= SOGLIE.attenzione) return "attenzione";
-  return "ok";
-}
-
-function contaPerStato(lista, stato) {
-  return lista.filter((server) => statoServer(server) === stato).length;
-}
-
-function cpuMedia(lista) {
-  const online = lista.filter((server) => server.online);
-  if (online.length === 0) return null;
-  const totale = online.reduce((somma, server) => somma + server.cpu, 0);
-  return totale / online.length;
-}
-
-function piuLento(lista) {
-  const online = lista.filter((server) => server.online);
-  if (online.length === 0) return null;
-  return online.reduce((lento, server) =>
-    lento === null || server.latenza > lento.latenza ? server : lento, null);
-}
-
-function BadgeStato({ stato }) {
-  const testo =
-    stato === "offline" ? "Offline" :
-    stato === "critico" ? "Critico" :
-    stato === "attenzione" ? "Attenzione" : "OK";
-
-  return <span className={`badge badge-${stato}`}>{testo}</span>;
-}
-
-function SchedaServer({ server }) {
-  const stato = statoServer(server);
-  const { nome, ruolo, sede, ip, cpu, latenza, servizi, manutenzione } = server;
-
-  return (
-    <article className={`scheda scheda-${stato}`}>
-      <h3>{nome}<BadgeStato stato={stato} /></h3>
-      <p className="ruolo">{ruolo} - {sede} - {ip}</p>
-      <p>{cpu === null ? "CPU: -" : `CPU: ${cpu}%`}</p>
-      <p>{latenza === null ? "Latenza: -" : `Latenza: ${latenza} ms`}</p>
-      <p>{servizi.length > 0 ? `Servizi: ${servizi.join(", ")}` : "Servizi: nessuno"}</p>
-      <p>{manutenzione
-        ? `Manutenzione: ${manutenzione.data}, ${manutenzione.motivo}`
-        : "Manutenzione: nessuna in programma"}</p>
-    </article>
-  );
-}
+const CERCATO = "db-01";
 
 export default function App() {
-  const onlineCount = servers.filter((server) => server.online).length;
-  const ok = contaPerStato(servers, "ok");
-  const attenzione = contaPerStato(servers, "attenzione");
-  const critici = contaPerStato(servers, "critico");
-  const offline = contaPerStato(servers, "offline");
-  const mediaCpu = cpuMedia(servers);
-  const lento = piuLento(servers);
-  const cercato = "db-01";
-  const serverTrovato = servers.find((server) => server.nome === cercato);
+  const onlineCount = servers.filter((s) => s.online).length;
+  const serverTrovato = servers.find((s) => s.nome === CERCATO);
 
   return (
     <main className="pannello">
@@ -77,37 +19,44 @@ export default function App() {
           Aggiornato il {sistema.aggiornato}</p>
       </header>
 
-      <section className="riepilogo">
-        <div className="casella"><span className="numero">{ok}</span><span className="etichetta">OK</span></div>
-        <div className="casella"><span className="numero">{attenzione}</span><span className="etichetta">Attenzione</span></div>
-        <div className="casella"><span className="numero">{critici}</span><span className="etichetta">Critici</span></div>
-        <div className="casella"><span className="numero">{offline}</span><span className="etichetta">Offline</span></div>
-        <div className="casella"><span className="numero">{mediaCpu === null ? "-" : `${mediaCpu.toFixed(1)}%`}</span><span className="etichetta">CPU media (server online)</span></div>
-        <div className="casella"><span className="numero">{lento ? `${lento.latenza} ms` : "-"}</span><span className="etichetta">{lento ? `Piu lento: ${lento.nome}` : "Piu lento: nessuno"}</span></div>
-      </section>
+      <Riepilogo
+        ok={contaPerStato(servers, "ok")}
+        attenzione={contaPerStato(servers, "attenzione")}
+        critici={contaPerStato(servers, "critico")}
+        offline={contaPerStato(servers, "offline")}
+        mediaCpu={cpuMedia(servers)}
+        lento={piuLento(servers)}
+      />
 
       <section className="sezione">
         <h2>Server</h2>
         <div className="griglia">
-          {servers.map((server) => <SchedaServer key={server.nome} server={server} />)}
+          {servers.map((s) => <SchedaServer key={s.nome} server={s} />)}
         </div>
       </section>
 
       <div className="colonne">
         <section className="riquadro evidenza">
-          <h2>Server cercato: {cercato}</h2>
+          <h2>Server cercato: {CERCATO}</h2>
           {serverTrovato
             ? <SchedaServer server={serverTrovato} />
-            : <p className="non-trovato">Nessun server si chiama {cercato}</p>}
+            : <p className="non-trovato">Nessun server si chiama {CERCATO}</p>}
         </section>
-
-        <section className={`riquadro avvisi ${avvisi.length === 0 ? "avvisi-vuoto" : ""}`}>
-          <h2>Avvisi ({avvisi.length})</h2>
-          {avvisi.length === 0
-            ? <p>Nessun avviso</p>
-            : <p>{avvisi.join(" · ")}</p>}
-        </section>
+        <Avvisi avvisi={avvisi} />
       </div>
     </main>
   );
 }
+
+// Risposte alle domande
+//
+// 1. Con 7 server: la griglia mostra 7 schede (3+3+1 su schermo largo).
+//    Con 5 server: mostra 5 schede (3+2 o 2+2+1). Il conteggio "X online su N"
+//    e il riepilogo si aggiornano da soli perché leggono servers.length e
+//    i dati con filter/map. Con blackout: tutte le schede diventano grigie
+//    "Offline", riepilogo a 0 OK/Attenzione/Critici e N Offline, CPU media "-",
+//    più lento "-", avvisi "Nessun avviso". Nessun codice da cambiare.
+//
+// 2. Il flusso unidirezionale dei dati (props): i componenti non leggono i dati
+//    da soli, li ricevono come props. Cambiando la sorgente cambia solo cosa
+//    gli passi, e i sei componenti si aggiornano da soli senza toccarli.
