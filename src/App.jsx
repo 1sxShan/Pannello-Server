@@ -1,6 +1,5 @@
 import "./App.css";
 import { sistema, servers, avvisi } from "./dati";
-import { contaPerStato, cpuMedia, piuLento } from "./serverUtils";
 import SchedaServer from "./components/SchedaServer";
 import Riepilogo from "./components/Riepilogo";
 import Avvisi from "./components/Avvisi";
@@ -19,14 +18,7 @@ export default function App() {
           Aggiornato il {sistema.aggiornato}</p>
       </header>
 
-      <Riepilogo
-        ok={contaPerStato(servers, "ok")}
-        attenzione={contaPerStato(servers, "attenzione")}
-        critici={contaPerStato(servers, "critico")}
-        offline={contaPerStato(servers, "offline")}
-        mediaCpu={cpuMedia(servers)}
-        lento={piuLento(servers)}
-      />
+      <Riepilogo servers={servers} />
 
       <section className="sezione">
         <h2>Server</h2>
@@ -47,7 +39,6 @@ export default function App() {
     </main>
   );
 }
-
 // Risposte alle domande
 //
 // 1. Con 7 server: la griglia mostra 7 schede (3+3+1 su schermo largo).

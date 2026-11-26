@@ -1,1 +1,1 @@
-export const SOGLIE = { attenzione: 70, critico: 90 };
+export { SOGLIE, statoServer, contaPerStato, cpuMedia, piuLento } from "./serverUtils";
